@@ -1,3 +1,29 @@
-git add .gitignore
-git commit -m "Add .gitignore"
-git push
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Copyrighted / test audio — never commit tracks
+/audio/
+/test-songs/
+*.mp3
+*.wav
+*.ogg
+*.flac
+*.m4a
+
+# Debug recordings
+*.webm
+*.mp4
+
+# Node / tooling
+node_modules/
+npm-debug.log*
+.env
+.env.local
+
+# Build output
+/dist/
+/build/
