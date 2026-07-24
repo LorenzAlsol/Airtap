@@ -1,0 +1,148 @@
+:root{
+  --bg: #0f0a1c;
+  --bg-2: #170f2b;
+  --lime: #c8ff4d;
+  --violet: #8a6bff;
+  --paper: #f3f1ea;
+  --dim: rgba(243,241,234,0.5);
+  --display: 'Bungee', sans-serif;
+  --body: 'Space Grotesk', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+*{ box-sizing: border-box; }
+html, body{
+  margin:0; height:100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: var(--body);
+  color: var(--paper);
+}
+
+/* ---------- full-bleed stage ---------- */
+.stage{
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 50% 38%, var(--bg-2) 0%, var(--bg) 72%);
+}
+.stage video, .stage canvas{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit: cover;
+}
+#video{
+  transform: scaleX(-1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  filter: saturate(1.05) contrast(1.03);
+  z-index: 1;
+}
+.stage[data-mode="overlay"] #video{ opacity: 1; }
+#handOverlay{ transform: scaleX(-1); z-index: 2; }
+#gameCanvas{ z-index: 3; }
+#handOverlay, #gameCanvas{ pointer-events: none; }
+
+/* ---------- ambient rings ---------- */
+.ambient{ position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+.ring{ position: absolute; border-radius: 50%; border: 1.5px solid; }
+.ring.r1{ width: 130px; height: 130px; top: 10%; left: 8%;  border-color: rgba(200,255,77,0.16); }
+.ring.r2{ width: 80px;  height: 80px;  top: 72%; left: 12%; border-color: rgba(138,107,255,0.2); }
+.ring.r3{ width: 190px; height: 190px; top: 62%; right: 6%; border-color: rgba(138,107,255,0.13); }
+.ring.r4{ width: 60px;  height: 60px;  top: 14%; right: 16%;border-color: rgba(200,255,77,0.2); }
+@media (prefers-reduced-motion: no-preference){
+  .ring{ animation: drift 9s ease-in-out infinite; }
+  .ring.r2{ animation-delay: -2s; }
+  .ring.r3{ animation-delay: -5s; }
+  .ring.r4{ animation-delay: -3.5s; }
+}
+@keyframes drift{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-16px); } }
+
+/* ---------- hero ---------- */
+.hero{
+  position: fixed; inset: 0; z-index: 10;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap: 22px;
+  text-align: center;
+  padding: 0 20px;
+  transition: opacity 0.4s ease;
+}
+.hero.hidden{ opacity: 0; pointer-events: none; }
+
+.title{
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(64px, 16vw, 168px);
+  line-height: 0.9;
+  margin: 0;
+  letter-spacing: 0.01em;
+  transform: rotate(-1.5deg);
+  background: linear-gradient(135deg, var(--lime) 15%, var(--violet) 85%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 34px rgba(200,255,77,0.22));
+}
+
+.tagline{
+  font-family: var(--mono);
+  font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--dim);
+  margin: -8px 0 6px;
+}
+
+.start-circle{
+  position: relative;
+  width: 128px; height: 128px;
+  border-radius: 50%;
+  border: 3px solid var(--lime);
+  background: radial-gradient(circle at 32% 28%, rgba(200,255,77,0.22), rgba(138,107,255,0.05) 60%, transparent 78%);
+  display:flex; align-items:center; justify-content:center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.start-circle:hover{ transform: scale(1.05); }
+.start-circle:active{ transform: scale(0.95); }
+.start-circle:focus-visible{ outline: 2px solid var(--violet); outline-offset: 4px; }
+.start-circle span{
+  font-family: var(--mono); font-weight: 600; font-size: 13px;
+  letter-spacing: 0.12em; color: var(--paper);
+}
+.start-circle::before{
+  content:''; position:absolute; inset:-16px; border-radius:50%;
+  border: 1.5px solid rgba(200,255,77,0.35);
+}
+@media (prefers-reduced-motion: no-preference){
+  .start-circle::before{ animation: approach 2.4s ease-in-out infinite; }
+}
+@keyframes approach{
+  0%,100%{ transform: scale(1); opacity: 0.6; }
+  50%{ transform: scale(1.14); opacity: 0.1; }
+}
+
+.footnote{
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--dim);
+}
+
+/* ---------- mode switch ---------- */
+.mode-switch{
+  position: fixed; top: 22px; right: 24px; z-index: 12;
+  display:flex; align-items:center; gap: 10px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.mode-switch button{
+  background:none; border:none; cursor:pointer;
+  color: var(--dim); padding: 4px 2px; position: relative;
+}
+.mode-switch button.active{ color: var(--lime); }
+.mode-switch button.active::after{
+  content:''; position:absolute; left:0; right:0; bottom:-4px; height:2px; background: var(--lime);
+}
+.mode-switch button:focus-visible{ outline: 2px solid var(--violet); outline-offset: 3px; }
+.mode-switch .sep{ color: rgba(255,255,255,0.2); }
+
+/* ---------- debug hud ---------- */
+.debug-hud{
+  position: fixed; bottom: 18px; left: 22px; z-index: 12;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em;
+  color: var(--dim);
+}
+.debug-hud b{ color: var(--lime); }
